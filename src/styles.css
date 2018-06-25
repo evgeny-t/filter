@@ -1,0 +1,52 @@
+.filter__root {
+  border: 1px solid #ccc;
+  position: relative;
+  padding-left: 2.2rem;
+}
+.filter__filter-icon {
+  height: 2.2rem;
+  width: 2.2rem;
+  position: absolute;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.filter__filter-svg {
+  fill: #aaa;
+  width: 18px;
+  height: 18px;
+}
+.filter__menu-positioner {
+  outline: 0.5px dashed blue;
+  position: absolute;
+}
+
+.menu {
+  list-style-type: none;
+  max-height: 100px;
+  min-width: 200px;
+  overflow-y: scroll;
+  padding: 0;
+  margin: 0;
+}
+.menu li {
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.menu li:hover {
+  background: #eee;
+}
+
+.chip {
+  outline: 1px solid red;
+  display: inline-block;
+  background: #eee;
+  padding: 0.3rem;
+  margin: 0.3rem 0.15rem;
+  border-radius: 1rem;
+  transition: all 0.4s;
+}
+.chip:hover {
+  background: #ddd;
+}
