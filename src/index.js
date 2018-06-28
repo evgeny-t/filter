@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Scrollbars } from "react-custom-scrollbars";
 
 import "./styles.css";
 
@@ -10,12 +11,50 @@ class Chip extends React.Component {
 }
 
 class Menu extends React.Component {
+  lis = [];
+  state = {
+    activeIndex: 0
+  };
+  componentDidUpdate() {
+    const { activeIndex } = this.state;
+    const li = this.lis[activeIndex];
+    const { top: liTop, height } = li.getBoundingClientRect();
+    const { top: ulTop } = this.ul.getBoundingClientRect();
+    const { scrollTop, clientHeight } = this.sb.getValues();
+    const y = liTop - ulTop;
+    if (y < scrollTop) {
+      this.sb.scrollTop(Math.max(y - 10, 0));
+    } else if (y + height > scrollTop + clientHeight) {
+      this.sb.scrollTop(y + height + 10 - clientHeight);
+    }
+  }
+  selectNext() {
+    this.setState(state => ({ activeIndex: state.activeIndex + 1 }));
+  }
+  selectPrevious() {
+    this.setState(state => ({ activeIndex: state.activeIndex - 1 }));
+  }
   render() {
-    console.log("---", this.props);
     return (
-      <ul className="menu">
-        {this.props.items.map(item => <li>{item}</li>)}
-      </ul>
+      <Scrollbars
+        style={{ width: 200, height: 100 }}
+        ref={that => (this.sb = that)}
+      >
+        <ul className="menu" ref={that => (this.ul = that)}>
+          {this.props.items.map((item, i) => (
+            <li
+              style={{
+                background:
+                  i === this.state.activeIndex ? "#ddd" : null
+              }}
+              ref={that => (this.lis[i] = that)}
+              data-index={i}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </Scrollbars>
     );
   }
 }
@@ -24,8 +63,7 @@ class Filter extends React.Component {
   state = {
     dropdownOffset: 0,
     active: false,
-    open: false,
-    activeIndex: null
+    open: false
   };
   render() {
     return (
@@ -34,10 +72,7 @@ class Filter extends React.Component {
         ref={that => (this._rootRef = that)}
       >
         <div className="filter__filter-icon">
-          <svg
-            className="filter__filter-svg"
-            viewBox="0 0 18 18"
-          >
+          <svg className="filter__filter-svg" viewBox="0 0 18 18">
             <path d="M2 4 h14v2H2V4z m2 4 h10v2H4V8z m2 4 h6v2H6v-2z" />
           </svg>
         </div>
@@ -62,8 +97,8 @@ class Filter extends React.Component {
             }}
           >
             <Menu
-              activeIndex={this.state.activeIndex}
-              q={[1, 2, 3, 4, 5]}
+              items={[1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15]}
+              ref={that => (this.menu = that)}
             />
           </div>
         )}
@@ -74,8 +109,7 @@ class Filter extends React.Component {
   handleInputFocus = e => {
     const x = this._rootRef.getBoundingClientRect().x;
     this.setState({
-      dropdownOffset:
-        e.target.getBoundingClientRect().x - x,
+      dropdownOffset: e.target.getBoundingClientRect().x - x,
       active: true
     });
   };
@@ -83,17 +117,13 @@ class Filter extends React.Component {
     // this.setState({ active: false });
   };
   handleKeyDown = e => {
-    if (e.keyCode === 40) {
-      this.setState(state =>
-        Object.assign(
-          {},
-          state,
-          (state.activeIndex || 0) + 1
-        )
-      );
-    }
     e.persist();
-    console.log(e);
+    console.log(e.keyCode);
+    if (e.keyCode === 40) {
+      this.menu.selectNext();
+    } else if (e.keyCode === 38) {
+      this.menu.selectPrevious();
+    }
   };
 }
 
