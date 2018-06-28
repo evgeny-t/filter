@@ -13,10 +13,14 @@ class Chip extends React.Component {
 class Menu extends React.Component {
   lis = [];
   state = {
-    activeIndex: 0
+    activeIndex: undefined
   };
   componentDidUpdate() {
     const { activeIndex } = this.state;
+    if (!(0 <= activeIndex && activeIndex < this.lis.length)) {
+      return;
+    }
+
     const li = this.lis[activeIndex];
     const { top: liTop, height } = li.getBoundingClientRect();
     const { top: ulTop } = this.ul.getBoundingClientRect();
@@ -29,10 +33,17 @@ class Menu extends React.Component {
     }
   }
   selectNext() {
-    this.setState(state => ({ activeIndex: state.activeIndex + 1 }));
+    this.setState(state => ({
+      activeIndex:
+        state.activeIndex === undefined ? 0 : state.activeIndex + 1
+    }));
   }
   selectPrevious() {
-    this.setState(state => ({ activeIndex: state.activeIndex - 1 }));
+    this.setState(state => ({
+      activeIndex: state.activeIndex
+        ? state.activeIndex - 1
+        : state.activeIndex
+    }));
   }
   render() {
     return (
