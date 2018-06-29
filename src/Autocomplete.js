@@ -2,6 +2,7 @@ import React from "react";
 import { AutocompleteMenu } from "./AutocompleteMenu";
 
 export class Autocomplete extends React.Component {
+  state = { inputValue: "" };
   render() {
     return this.props.children({
       renderInput: this.renderInput,
@@ -14,20 +15,31 @@ export class Autocomplete extends React.Component {
       <AutocompleteMenu
         items={[1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15]}
         ref={that => (this.menu = that)}
+        onSelect={this.handleMenuSelect}
       />
     );
+  };
+
+  handleMenuSelect = value => {
+    this.setState({ inputValue: value });
   };
 
   renderInput = props => {
     return (
       <input
         type="text"
+        value={this.state.inputValue}
         placeholder="Filter..."
         onBlur={this.handleInputBlur}
         onKeyDown={this.handleKeyDown}
+        onChange={this.handleChange}
         {...props}
       />
     );
+  };
+
+  handleChange = e => {
+    this.setState({ inputValue: e.target.value });
   };
 
   handleKeyDown = e => {

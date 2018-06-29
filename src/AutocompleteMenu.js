@@ -24,17 +24,29 @@ export class AutocompleteMenu extends React.Component {
     }
   }
   selectNext() {
-    this.setState(state => ({
-      activeIndex:
-        state.activeIndex === undefined ? 0 : state.activeIndex + 1
-    }));
+    this.setState(state => {
+      const nextIndex =
+        state.activeIndex === undefined ? 0 : state.activeIndex + 1;
+      setTimeout(() => {
+        this.props.onSelect(this.props.items[nextIndex]);
+      }, 0);
+      return {
+        activeIndex: nextIndex
+      };
+    });
   }
   selectPrevious() {
-    this.setState(state => ({
-      activeIndex: state.activeIndex
+    this.setState(state => {
+      const nextIndex = state.activeIndex
         ? state.activeIndex - 1
-        : state.activeIndex
-    }));
+        : state.activeIndex;
+      setTimeout(() => {
+        this.props.onSelect(this.props.items[nextIndex]);
+      }, 0);
+      return {
+        activeIndex: nextIndex
+      };
+    });
   }
   render() {
     return (
@@ -42,7 +54,11 @@ export class AutocompleteMenu extends React.Component {
         style={{ width: 200, height: 100 }}
         ref={that => (this.sb = that)}
       >
-        <ul className="menu" ref={that => (this.ul = that)}>
+        <ul
+          className="menu"
+          ref={that => (this.ul = that)}
+          onClick={this.handleClick}
+        >
           {this.props.items.map((item, i) => (
             <li
               key={item}
@@ -60,4 +76,11 @@ export class AutocompleteMenu extends React.Component {
       </Scrollbars>
     );
   }
+
+  handleClick = e => {
+    const { items, onSelect } = this.props;
+    onSelect(items[e.target.dataset.index], {
+      action: "click"
+    });
+  };
 }
