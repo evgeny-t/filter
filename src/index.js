@@ -134,6 +134,8 @@ class Filter extends React.Component {
       this.menu.selectNext();
     } else if (e.keyCode === 38) {
       this.menu.selectPrevious();
+    } else if (e.keyCode === 13) {
+      this.menu;
     }
   };
 }
