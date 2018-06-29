@@ -6,10 +6,19 @@ export class AutocompleteMenu extends React.Component {
   state = {
     activeIndex: undefined
   };
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const { activeIndex } = this.state;
     if (!(0 <= activeIndex && activeIndex < this.lis.length)) {
       return;
+    }
+
+    if (activeIndex !== prevState.activeIndex) {
+      console.log(
+        "componentDidUpdate",
+        activeIndex,
+        prevState.activeIndex
+      );
+      this.props.onSelect(this.props.items[activeIndex]);
     }
 
     const li = this.lis[activeIndex];
@@ -27,9 +36,6 @@ export class AutocompleteMenu extends React.Component {
     this.setState(state => {
       const nextIndex =
         state.activeIndex === undefined ? 0 : state.activeIndex + 1;
-      setTimeout(() => {
-        this.props.onSelect(this.props.items[nextIndex]);
-      }, 0);
       return {
         activeIndex: nextIndex
       };
@@ -40,15 +46,16 @@ export class AutocompleteMenu extends React.Component {
       const nextIndex = state.activeIndex
         ? state.activeIndex - 1
         : state.activeIndex;
-      setTimeout(() => {
-        this.props.onSelect(this.props.items[nextIndex]);
-      }, 0);
       return {
         activeIndex: nextIndex
       };
     });
   }
+  selectCurrent() {
+    // this.props.onSelect(this.props.items[this.state.activeIndex]);
+  }
   render() {
+    console.log("render", this.state.activeIndex);
     return (
       <Scrollbars
         style={{ width: 200, height: 100 }}
@@ -78,9 +85,7 @@ export class AutocompleteMenu extends React.Component {
   }
 
   handleClick = e => {
-    const { items, onSelect } = this.props;
-    onSelect(items[e.target.dataset.index], {
-      action: "click"
-    });
+    const activeIndex = +e.target.dataset.index;
+    this.setState({ activeIndex });
   };
 }
