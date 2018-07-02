@@ -21,7 +21,9 @@ export class Autocomplete extends React.Component {
   };
 
   handleMenuSelect = value => {
-    this.setState({ inputValue: value }, () => this.input.focus());
+    this.setState({ inputValue: value }, () => {
+      this.input.focus();
+    });
   };
 
   renderInput = props => {
@@ -49,8 +51,10 @@ export class Autocomplete extends React.Component {
     if (e.keyCode === 40) {
       this.menu.selectNext();
     } else if (e.keyCode === 38) {
+      e.preventDefault();
       this.menu.selectPrevious();
     } else if (e.keyCode === 13) {
+      e.preventDefault();
       this.menu.selectCurrent();
     }
   };
