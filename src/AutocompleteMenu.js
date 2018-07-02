@@ -1,23 +1,33 @@
 import React from "react";
 import { Scrollbars } from "react-custom-scrollbars";
 
+const clamp = (val, lb, ub) =>
+  val < lb ? lb : val >= ub ? ub - 1 : val;
+
 export class AutocompleteMenu extends React.Component {
+  static defaultProps = {
+    filterItems: items => items,
+    items: []
+  };
+
   lis = [];
   state = {
     activeIndex: undefined
   };
+
   componentDidUpdate(prevProps, prevState) {
     const { activeIndex } = this.state;
-    if (!(0 <= activeIndex && activeIndex < this.lis.length)) {
+    if (
+      !(
+        this.lis.length &&
+        0 <= activeIndex &&
+        activeIndex < this.lis.length
+      )
+    ) {
       return;
     }
 
     if (activeIndex !== prevState.activeIndex) {
-      console.log(
-        "componentDidUpdate",
-        activeIndex,
-        prevState.activeIndex
-      );
       this.props.onSelect(this.props.items[activeIndex]);
     }
 
@@ -32,41 +42,51 @@ export class AutocompleteMenu extends React.Component {
       this.sb.scrollTop(y + height + 10 - clientHeight);
     }
   }
+
   selectNext() {
     this.setState(state => {
       const nextIndex =
-        state.activeIndex === undefined ? 0 : state.activeIndex + 1;
+        state.activeIndex == null
+          ? 0
+          : clamp(state.activeIndex + 1, 0, this.lis.length);
       return {
         activeIndex: nextIndex
       };
     });
   }
+
   selectPrevious() {
     this.setState(state => {
       const nextIndex = state.activeIndex
-        ? state.activeIndex - 1
+        ? clamp(state.activeIndex - 1, 0, this.lis.length)
         : state.activeIndex;
       return {
         activeIndex: nextIndex
       };
     });
   }
+
   selectCurrent() {
+    console.warn("selectCurrent is not implemented");
     // this.props.onSelect(this.props.items[this.state.activeIndex]);
   }
+
   render() {
-    console.log("render", this.state.activeIndex);
+    this.lis = [];
     return (
       <Scrollbars
-        style={{ width: 200, height: 100 }}
+        style={{ width: 200 }}
         ref={that => (this.sb = that)}
+        autoHeight
+        autoHeightMin={0}
+        autoHeightMax={100}
       >
         <ul
           className="menu"
           ref={that => (this.ul = that)}
           onClick={this.handleClick}
         >
-          {this.props.items.map((item, i) => (
+          {this.props.filterItems(this.props.items).map((item, i) => (
             <li
               key={item}
               style={{

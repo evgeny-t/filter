@@ -13,9 +13,10 @@ export class Autocomplete extends React.Component {
   renderMenu = () => {
     return (
       <AutocompleteMenu
-        items={[1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15]}
+        items={[1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15].map(i => i.toString())}
         ref={that => (this.menu = that)}
         onSelect={this.handleMenuSelect}
+        filterItems={this.filterMenuItems}
       />
     );
   };
@@ -39,6 +40,10 @@ export class Autocomplete extends React.Component {
         {...props}
       />
     );
+  };
+
+  filterMenuItems = items => {
+    return items.filter(item => ~item.indexOf(this.state.inputValue));
   };
 
   handleChange = e => {
